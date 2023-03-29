@@ -1,5 +1,5 @@
 import BusquedaDeArchivos as BuscadorArchivos
-import ListaSimple as ListaSimple
+import Estructuras.ListaSimple as ListaSimple
 import sys
 import os
 from xml.dom import minidom
