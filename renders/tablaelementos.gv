@@ -1,0 +1,40 @@
+// Tabla de Elementos quimicos
+digraph {
+	node [fontname=calibri shape=none]
+	"tabla de elementos quimicos" [label=<
+<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+  <TR><TD colspan = "3" bgcolor="#45ff8c">Tabla de Elementos Quimicos</TD></TR>
+  <TR>
+  <TD bgcolor="#adffcd">Numero atomico</TD>
+  <TD bgcolor="#adffcd">Simbolo</TD>
+  <TD bgcolor="#adffcd">Elemento</TD>
+  </TR><TR>
+            <TD>1</TD>
+            <TD>H</TD>
+            <TD>Hidrogeno</TD>
+            </TR><TR>
+            <TD>2</TD>
+            <TD>He</TD>
+            <TD>Helio</TD>
+            </TR><TR>
+            <TD>3</TD>
+            <TD>li</TD>
+            <TD>Litio</TD>
+            </TR><TR>
+            <TD>4</TD>
+            <TD>Be</TD>
+            <TD>Berilio</TD>
+            </TR><TR>
+            <TD>5</TD>
+            <TD>Bo</TD>
+            <TD>Boro</TD>
+            </TR><TR>
+            <TD>6</TD>
+            <TD>C</TD>
+            <TD>Carbono</TD>
+            </TR><TR>
+            <TD>7</TD>
+            <TD>N</TD>
+            <TD>Nitrogeno</TD>
+            </TR></TABLE>>]
+}

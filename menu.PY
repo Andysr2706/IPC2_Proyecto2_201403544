@@ -1,28 +1,26 @@
-import BusquedaDeArchivos as BuscadorArchivos
+import Funciones.BusquedaDeArchivos as BuscadorArchivos
 import Estructuras.ListaSimple as ListaSimple
 import sys
 import os
 from xml.dom import minidom
 import xml.etree.cElementTree as ET
-import Muestra as muestraactual
-import OrganismoVivo as OrganizmoV
-import Organismo as OrganismoN
+import Objetos.ElementoQuimico as ElementoQuimico
+import Objetos.Compuesto as Compuesto
+import Objetos.Maquina as Maquina
 from graphviz import Digraph
-from Generadordecolores import generarcolor
 
 class menu:
 
-    muestraAnalizada:muestraactual
+    ListaElementos        = ListaSimple.Lista_simple()
+    ListaMaquinas         = ListaSimple.Lista_simple()
+    ListaCompuestos       = ListaSimple.Lista_simple()
 
-    ListaOrganizmos      = ListaSimple.Lista_simple()
-    ListaOrganizmosVivos = ListaSimple.Lista_simple()
+    ListaElementos.cabeza = None
+
 
     
     def menuprincipal():
-        #os.system("cls")
         ruta = ''
-        
-        
 
         print("\n-----------------------Proyecto 2 IPC 2-----------------------")
         print("            Andy Jeferson Salas Ramirez 201403544")
@@ -35,10 +33,13 @@ class menu:
             print("Seleccione la opcion a utilizar:")
             print("1. Cargar XML")
             print("2. Analizar Archivo XML.")
-            print("3. Graficar muestra.")
-            print("4. Ingresar organizmo vivo en muestra.")
-            print("5. Crear un archivo XML nuevo.")
-            print("6. Salir.\n")
+            print("3. Ver lista de elementos quimicos.")
+            print("4. Agregar un elemento quimico nuevo.")
+            print("5. Ver listado de compuestos.")
+            print("6. Ver listado de maquinas.")
+            print("7. Graficar instrucciones para realizar compuestos.")
+            print("8. acerca de.")
+            print("9. Salir.\n")
 
             SeleccionMenu = int(input())
 
@@ -73,7 +74,7 @@ class menu:
             
                 
             if SeleccionMenu == 3:
-               menu.graficarMuestra() 
+               menu.graficarTablaElementos() 
             
             if SeleccionMenu == 4:
                 menu.agregarCeldaViva()
@@ -86,282 +87,111 @@ class menu:
 
 
 
-
-
     def procesarInformacion(archivoXML):
 
-        menu.ListaOrganizmos.cabeza = None
-        menu.ListaOrganizmosVivos.cabeza = None
+        menu.ListaMaquinas.cabeza   = None
+        menu.ListaCompuestos.cabeza = None
+
+        ElementosXML = archivoXML.getElementsByTagName('elemento')
+
+        for elemento in ElementosXML:
+            NumeroAtomico  = elemento.childNodes[1].firstChild.data
+            Simbolo        = elemento.childNodes[3].firstChild.data
+            NombreElemento = elemento.childNodes[5].firstChild.data
+
+            #print(NumeroAtomico+' '+ Simbolo+' '+ NombreElemento)
+
+            nuevoElemento  = ElementoQuimico.ElementoQuimico(NumeroAtomico, Simbolo, NombreElemento)
+
+            menu.ListaElementos.agregar_al_inicio(nuevoElemento)
+
         
-        coleccionX  = archivoXML.getElementsByTagName('filas')
-        coleccionY  = archivoXML.getElementsByTagName('columnas')
-        muestra     = archivoXML.getElementsByTagName('muestra')
+    def AgregarElementoQuimico():
 
-        codigoMuestra       = muestra[0].childNodes[1].firstChild.data 
-        descripcionMuestra  = muestra[0].childNodes[3].firstChild.data 
+        
 
-        dimensionX = coleccionX[0].childNodes[0].data
-        dimensionY = coleccionY[0].childNodes[0].data
+        print("\n ingrese numero atomico.")
+        numeroA: input()
 
-        if (int(dimensionX)> 10000 or int(dimensionY) > 10000):
-            print('La dimension de la muestra es demasiado grande, ingrese un archivo que tenga dimensiones mas pequeñas:\n')
+        print("\n ingrese Simbolo")
+        simboloA: input()
+        
+        print("\n ingrese nombre del elemento")
+        NombreE: input()
+        
+        ListaAuxiliar = menu.ListaElementos.cabeza
 
-        else:
-              
-            nuevaMuestra  =  muestraactual.Muestra(codigoMuestra,descripcionMuestra,dimensionX,dimensionY)
+        while ListaAuxiliar != None:
+            if numeroA == ListaAuxiliar.dato.NumeroAtomico or simboloA == ListaAuxiliar.dato.Simbolo or NombreE == ListaAuxiliar.dato.NombreElemento:
+                print('No se puede agregar un elemento ya existente en la lista.')
+                ListaAuxiliar = ListaAuxiliar.siguiente
 
-            organismosXML = archivoXML.getElementsByTagName('organismo')
-
-            for organismo in organismosXML:
-
-                codigo = organismo.childNodes[1].firstChild.data
-                nombre = organismo.childNodes[3].firstChild.data
-                color = generarcolor()
-
-                #print(codigo + ' '+ nombre + '  ' + color)
-
-                nuevoOrganismo = OrganismoN.Organismo(codigo,nombre,color)
-                menu.ListaOrganizmos.agregar_al_inicio(nuevoOrganismo)
-
-            celdasVivasXML = archivoXML.getElementsByTagName('celdaViva')
-
-            if(len(celdasVivasXML)>1000):
-                print('Error: la muestra tiene mas de 1000 celdas vivas, ingrese una muestra con menos muestras vivas:\n')
             else:
-                    
-
-                for celdaViva in celdasVivasXML:
-
-                    fila            = celdaViva.childNodes[1].firstChild.data
-                    columna         = celdaViva.childNodes[3].firstChild.data
-                    codigoOrganismo = celdaViva.childNodes[5].firstChild.data
-
-                    
-                    colorV = ''
-
-                    listaorganizmos = menu.ListaOrganizmos
-                    nodo = listaorganizmos.cabeza
-
-                    while nodo !=None:
-                        if codigoOrganismo == nodo.dato.codigo:
-                            colorV = nodo.dato.color
-                            break
-
-                        else:
-                            colorV = ''
-                            nodo   = nodo.siguiente
+                nuevoElemento  = ElementoQuimico.ElementoQuimico(numeroA, simboloA, NombreE)
+                menu.ListaElementos.agregar_al_inicio(nuevoElemento)
+                break
+            
 
 
-
-                    nuevaCeldaViva  = OrganizmoV.OrganismoVivo(codigoOrganismo,fila,columna,colorV)
-
-                    
-
-                    menu.ListaOrganizmosVivos.agregar_al_inicio(nuevaCeldaViva)
-
-                menu.muestraAnalizada = nuevaMuestra
+    def ordenarListaElementos(cabeza):
+        nodolista           = ListaSimple.Nodo(None)
+        nodolista.siguiente = cabeza
         
+        NumeroAtomicoActual    = 0
+        NumeroAtomicoSiguiente = 0
+        ExisteOrden            = True
+
+        while ExisteOrden:
+            ExisteOrden  = False
+            nodotemporal = nodolista
+            
+            while nodotemporal.siguiente and nodotemporal.siguiente.siguiente:
+
+                primero = nodotemporal.siguiente
+                segundo = primero.siguiente
+
+                NumeroAtomicoActual    = int(primero.dato.NumeroAtomico)
+                NumeroAtomicoSiguiente = int(segundo.dato.NumeroAtomico)
 
 
-    def graficarMuestra():
+                if NumeroAtomicoActual > NumeroAtomicoSiguiente :
+                    nodotemporal.siguiente = segundo
+                    primero.siguiente      = segundo.siguiente
+                    segundo.siguiente      = primero
+                    ExisteOrden = True 
+                nodotemporal = nodotemporal.siguiente
+            
+        cabeza = nodolista.siguiente
 
-        x   = menu.muestraAnalizada.DimensionX
-        y   = menu.muestraAnalizada.DimensionY
+        return cabeza
 
-        dot = Digraph(comment= "Tabla de muestra")
+    def graficarTablaElementos():
+
+        menu.ListaElementos.cabeza = menu.ordenarListaElementos(menu.ListaElementos.cabeza)
+
+        dot = Digraph(comment= "Tabla de Elementos quimicos")
         
-        dot.attr('node', shape='record')
-        dot.attr(label="Tabla de muestras con: Filas: "+x+" Columnas: "+ y)
-
+        dot.attr('node', shape='none', fontname = 'calibri')
         codigoGraphviz = '''<
 <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
-  <TR>'''
+  <TR><TD colspan = "3" bgcolor="#45ff8c">Tabla de Elementos Quimicos</TD></TR>
+  <TR>
+  <TD bgcolor="#adffcd">Numero atomico</TD>
+  <TD bgcolor="#adffcd">Simbolo</TD>
+  <TD bgcolor="#adffcd">Elemento</TD>
+  </TR>'''
         
-        codigoColores = '''<
-<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">'''
+        nodo = menu.ListaElementos.cabeza
 
-        cuentaX = 0
-        cuentaY = -1
-        while (cuentaX <= int(x)):
-            if(cuentaY == -1):
-                codigoGraphviz = codigoGraphviz+'''
-                <TD bgcolor='lightgrey'>X,Y</TD>'''
-            else:
-                codigoGraphviz = codigoGraphviz+'''
-                    <TD bgcolor='lightgrey'>'''+str(cuentaX-1)+'</TD>'
-            
-            cuentaY = 0
-            
-            while (cuentaY < int(y)):
-                
-                if(cuentaX == 0):
-                    codigoGraphviz = codigoGraphviz+'''
-                    <TD bgcolor='lightgrey'>'''+str(cuentaY)+'</TD>'
-                else:
-                    listaceldasv = menu.ListaOrganizmosVivos
-                    nodoActual = listaceldasv.cabeza
-
-                    codigoOrganizmo = ''
-
-                    while nodoActual !=None:
-
-                        CeldaViva:OrganizmoV.OrganismoVivo = nodoActual.dato
-                        coordenadaX = CeldaViva.x
-                        coordenadaY = CeldaViva.y
-
-                        if(int(cuentaX-1) == int(coordenadaX) and int(cuentaY) == int(coordenadaY)):
-                            codigoOrganizmo = '''
-                            <TD bgcolor="'''+CeldaViva.color +'''">   </TD>'''
-                            break
-                        else:
-
-                            codigoOrganizmo = '''
-                            <TD>'''+"   "+'</TD>'
-                        nodoActual = nodoActual.siguiente
-
-                    codigoGraphviz = codigoGraphviz + codigoOrganizmo
-                            
-                cuentaY = cuentaY + 1
-            
-            cuentaX = cuentaX + 1
-            
-            if(cuentaX-1 == int(x)):
-                codigoGraphviz = codigoGraphviz+'''
-                </TR>'''
-            else:
-                codigoGraphviz = codigoGraphviz+'''
-                </TR>
-                <TR>'''
-
-        codigoGraphviz = codigoGraphviz+ '''
-</TABLE>>'''
-
-
-        listaorganizmos = menu.ListaOrganizmos
-        nodo = listaorganizmos.cabeza
-
-        while nodo !=None:
-            codigoColores = codigoColores + '''<TR>
-            <TD>'''+nodo.dato.nombre +'''</TD>
-            <TD bgcolor="'''+nodo.dato.color +'''">   </TD>
-            
-            </TR>''' 
+        while nodo != None:
+            codigoGraphviz = codigoGraphviz + '''<TR>
+            <TD>'''+nodo.dato.NumeroAtomico +'''</TD>
+            <TD>'''+nodo.dato.Simbolo +'''</TD>
+            <TD>'''+nodo.dato.NombreElemento +'''</TD>
+            </TR>'''
             nodo = nodo.siguiente
 
-        codigoColores =codigoColores+ '''
-</TABLE>>'''
-
-
+        codigoGraphviz = codigoGraphviz + '''</TABLE>>'''
         
-        dot.node('tabla de organismos', codigoGraphviz)
-
-        dot.node('tabla de colores', codigoColores)
-
-
-
-        dot.render('./renders/tabla.gv', view=True)
-
-        
-    def agregarCeldaViva():
-
-        x  = -1
-        y  = -1
-        xv =  0
-        yv =  0
-        codigoOrganizmo      = ''
-        colorOrganizmo       = ''
-        listaorganizmosvivos = menu.ListaOrganizmosVivos
-        listaorganizmos      = menu.ListaOrganizmos
-        nodo                 = listaorganizmos.cabeza
-        nodovivos            = listaorganizmosvivos.cabeza
-
-        print("Ingrese el codigo del organizmo: ")
-        codigoOrganizmo = str(input())
-        while nodo !=None:
-            if nodo.dato.codigo == codigoOrganizmo :
-                colorOrganizmo = nodo.dato.color
-                print("ingrese coordenada en X:")
-                x=int(input())
-
-                print("ingrese coordenada en Y:")
-                y=int(input())
-
-                while(nodovivos != None):
-                    xv = int(nodovivos.dato.x)
-                    yv = int(nodovivos.dato.y)
-
-                    if(x==xv and y==yv):
-                        
-                        x = -2
-                        y = -2
-                        break
-                    else:
-                        nodovivos = nodovivos.siguiente
-                
-                break
-            else:
-                nodo = nodo.siguiente
-
-        if(x==-1 or y==-1):
-            print("Codigo del organizmo no existe, ingrese un organizmo que exista en la muestra")
-
-        elif(x==-2 or y==-2):
-            print("no se puede ingresar un organizmo vivo donde se encuentra un organizmo vivo actualmente")
-        else:
-
-            nuevaceldaviva = OrganizmoV.OrganismoVivo(codigoOrganizmo,x,y,colorOrganizmo)
-            menu.ListaOrganizmosVivos.agregar_al_inicio(nuevaceldaviva)
-            print("Organizmo vivo ingresado exitosamente!\n")
-
-
-    def generarXML():
-
-        listaOrganismos  = menu.ListaOrganizmos
-        listaCeldasVivas = menu.ListaOrganizmosVivos
-        nodoOrganismos   = listaOrganismos.cabeza
-        nodoCeldasVivas  = listaCeldasVivas.cabeza
-        m_encoding = 'UTF-8'
-
-        root = ET.Element("datosMarte")
-        doc  = ET.SubElement(root, 'listaOrganismos')
-        
-        while nodoOrganismos != None:
-            org = ET.SubElement(doc, "organismo")
-            ET.SubElement(org, 'codigo').text = str(nodoOrganismos.dato.codigo)
-            ET.SubElement(org, 'nombre').text = str(nodoOrganismos.dato.nombre)
-
-            nodoOrganismos = nodoOrganismos.siguiente
-
-        doc2     = ET.SubElement(root, 'listadoMuestras')
-        muestraA = ET.SubElement(doc2, 'muestra')
-        ET.SubElement(muestraA, 'codigo').text      = str(menu.muestraAnalizada.codigo)
-        ET.SubElement(muestraA, 'descripcion').text = str(menu.muestraAnalizada.descripcion)
-        ET.SubElement(muestraA, 'filas').text       = str(menu.muestraAnalizada.DimensionX)
-        ET.SubElement(muestraA, 'columnas').text    = str(menu.muestraAnalizada.DimensionY)
-        listadoCV = ET.SubElement(muestraA, 'listadoCeldasVivas')
-
-        
-        while nodoCeldasVivas != None :
-            CV = ET.SubElement(listadoCV, 'celdaViva')
-            ET.SubElement(CV, 'fila').text            = str(nodoCeldasVivas.dato.x)
-            ET.SubElement(CV, 'columna').text         = str(nodoCeldasVivas.dato.y)
-            ET.SubElement(CV, 'codigoOrganismo').text = str(nodoCeldasVivas.dato.organismo)
-
-            nodoCeldasVivas = nodoCeldasVivas.siguiente
-        
-
-        dom = minidom.parseString(ET.tostring(root))
-        xml_string   = dom.toprettyxml()
-        part1, part2 = xml_string.split('?>')
-
-        with open("./XML/Muestranueva.XML", 'w') as xfile:
-            xfile.write(part1 + 'encoding=\"{}\"?>\n'.format(m_encoding) + part2)
-            xfile.close()
-           
-        print("Archivo XML generado en la carpeta XML")
-
-             
-
-
-        
-        
+        dot.node('tabla de elementos quimicos', codigoGraphviz)
+        dot.render('./renders/tablaelementos.gv', view = True)
