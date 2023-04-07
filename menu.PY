@@ -5,7 +5,7 @@ import os
 from xml.dom import minidom
 import xml.etree.cElementTree as ET
 import Objetos.ElementoQuimico as ElementoQuimico
-import Objetos.Compuesto as Compuesto
+import Objetos.Pin as Pin
 import Objetos.Maquina as Maquina
 from graphviz import Digraph
 
@@ -92,20 +92,29 @@ class menu:
         menu.ListaMaquinas.cabeza   = None
         menu.ListaCompuestos.cabeza = None
 
+        elementospin = 0
+
         ElementosXML = archivoXML.getElementsByTagName('elemento')
+        
+        try:
 
-        for elemento in ElementosXML:
-            NumeroAtomico  = elemento.childNodes[1].firstChild.data
-            Simbolo        = elemento.childNodes[3].firstChild.data
-            NombreElemento = elemento.childNodes[5].firstChild.data
+            for elemento in ElementosXML:
+                NumeroAtomico  = elemento.childNodes[1].firstChild.data
+                Simbolo        = elemento.childNodes[3].firstChild.data
+                NombreElemento = elemento.childNodes[5].firstChild.data
 
-            #print(NumeroAtomico+' '+ Simbolo+' '+ NombreElemento)
+                #print(NumeroAtomico+' '+ Simbolo+' '+ NombreElemento)
 
-            nuevoElemento  = ElementoQuimico.ElementoQuimico(NumeroAtomico, Simbolo, NombreElemento)
+                nuevoElemento  = ElementoQuimico.ElementoQuimico(NumeroAtomico, Simbolo, NombreElemento)
 
-            menu.ListaElementos.agregar_al_inicio(nuevoElemento)
+                menu.ListaElementos.agregar_al_inicio(nuevoElemento)
+
+        except IndexError:
+            pass
 
         
+
+              
     def AgregarElementoQuimico():
 
         
@@ -130,7 +139,7 @@ class menu:
                 nuevoElemento  = ElementoQuimico.ElementoQuimico(numeroA, simboloA, NombreE)
                 menu.ListaElementos.agregar_al_inicio(nuevoElemento)
                 break
-            
+
 
 
     def ordenarListaElementos(cabeza):

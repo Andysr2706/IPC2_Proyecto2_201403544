@@ -1,4 +1,4 @@
-class ElementoQuimico:
+class Maquina:
     
     def __init__(self,NombreMaquina,NumeroPines,NumeroElementos) -> None:
         self.NombreMaquina=NombreMaquina
