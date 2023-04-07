@@ -16,6 +16,7 @@ class menu:
     ListaCompuestos       = ListaSimple.Lista_simple()
 
     ListaElementos.cabeza = None
+    ListaMaquinas.cabeza  = None
 
 
     
@@ -92,13 +93,30 @@ class menu:
         menu.ListaMaquinas.cabeza   = None
         menu.ListaCompuestos.cabeza = None
 
-        elementospin = 0
-
+        
         ElementosXML = archivoXML.getElementsByTagName('elemento')
         
         try:
 
             for elemento in ElementosXML:
+                NombreMaquina   = elemento.childNodes[1].firstChild.data
+                NumeroPines     = elemento.childNodes[3].firstChild.data
+                NumeroElementos = elemento.childNodes[5].firstChild.data
+
+                
+                nuevaMaquina = Maquina.Maquina(NombreMaquina, NumeroPines, NumeroElementos)
+
+                menu.ListaMaquinas.agregar_al_inicio(nuevoElemento)
+
+        except IndexError:
+            pass
+            
+        MaquinaXML = archivoXML.getElementsByTagName('Maquina')
+
+
+        try:
+
+            for Maquina in MaquinaXML:
                 NumeroAtomico  = elemento.childNodes[1].firstChild.data
                 Simbolo        = elemento.childNodes[3].firstChild.data
                 NombreElemento = elemento.childNodes[5].firstChild.data
@@ -111,7 +129,6 @@ class menu:
 
         except IndexError:
             pass
-
         
 
               
@@ -174,16 +191,14 @@ class menu:
 
         return cabeza
 
-    def graficarTablaElementos():
+    def graficarTablaMaquinas():
 
-        menu.ListaElementos.cabeza = menu.ordenarListaElementos(menu.ListaElementos.cabeza)
-
-        dot = Digraph(comment= "Tabla de Elementos quimicos")
+        dot = Digraph(comment= "Tabla de Máquinas")
         
         dot.attr('node', shape='none', fontname = 'calibri')
         codigoGraphviz = '''<
 <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
-  <TR><TD colspan = "3" bgcolor="#45ff8c">Tabla de Elementos Quimicos</TD></TR>
+  <TR><TD colspan = "3" bgcolor="#45ff8c">Tabla de Maquinas</TD></TR>
   <TR>
   <TD bgcolor="#adffcd">Numero atomico</TD>
   <TD bgcolor="#adffcd">Simbolo</TD>
@@ -204,3 +219,5 @@ class menu:
         
         dot.node('tabla de elementos quimicos', codigoGraphviz)
         dot.render('./renders/tablaelementos.gv', view = True)
+
+    
